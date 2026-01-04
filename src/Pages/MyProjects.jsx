@@ -29,11 +29,14 @@ export default function MyProjects() {
         return;
       }
 
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/projects`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setProjects(res.data);
     } catch (error) {
@@ -58,6 +61,17 @@ export default function MyProjects() {
     (sum, p) => sum + Number(p.totalAmount || 0),
     0
   );
+
+  //NEW CARDS :
+  const completedProjects = projects.filter(
+    (p) => Number(p.balanceSurgery) === 0
+  ).length;
+
+  const incompleteProjects = projects.filter(
+    (p) => Number(p.balanceSurgery) > 0
+  ).length;
+
+
 
   function StatCard({ title, value }) {
     return (
@@ -106,10 +120,12 @@ export default function MyProjects() {
       </div>
 
       {/* TOP CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-6">
         <StatCard title="Total Projects" value={totalProjects} />
         <StatCard title="Total Balance Surgeries" value={totalSurgeries} />
         <StatCard title="Total Amount (₹)" value={totalAmount} />
+        <StatCard title="Completed Projects" value={completedProjects} />
+        <StatCard title="Incomplete Projects" value={incompleteProjects} />
       </div>
 
       {/* TABLE */}
