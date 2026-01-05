@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AddProjectModal from "../Components/AddProjectModal";
 
+import editIcon from "../assets/edit-icon.svg";
+import trash from "../assets/trash.svg";
+
 export default function MyProjects() {
   const [showModal, setShowModal] = useState(false);
   const [projects, setProjects] = useState([]);
@@ -70,8 +73,6 @@ export default function MyProjects() {
   const incompleteProjects = projects.filter(
     (p) => Number(p.balanceSurgery) > 0
   ).length;
-
-
 
   function StatCard({ title, value }) {
     return (
@@ -164,26 +165,17 @@ export default function MyProjects() {
                 <td className="p-3 font-semibold">{p.balanceSurgery}</td>
                 <td className="p-3 flex gap-3 items-center">
                   {/* Edit */}
-                  <svg
+                  <img
+                    src={editIcon}
+                    alt="Edit"
                     onClick={() => handleEditClick(p)}
-                    xmlns="../assets/edit-icon.svg"
-                    className="h-5 w-5 text-blue-600 cursor-pointer hover:scale-110"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5h2m-1 0v14m7-7H5"
-                    />
-                  </svg>
+                    className="h-5 w-5 cursor-pointer hover:scale-110"
+                  />
 
                   {/* Delete */}
                   <svg
                     onClick={() => handleDelete(p.id)}
-                    xmlns="..assets/trash.svg"
+                    xmlns="C:\Users\hP\Documents\Aniket\PROJECTS\Agency\Dashboard Demo\frontend\src\assets\trash.svg"
                     className="h-5 w-5 text-red-600 cursor-pointer hover:scale-110"
                     fill="none"
                     viewBox="0 0 24 24"
