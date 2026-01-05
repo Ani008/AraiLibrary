@@ -54,6 +54,7 @@ export default function Surgeries() {
       s.patientName,
       s.operatedEye,
       s.surgeryName,
+      s.surgeryCategory,
       new Date(s.dateOfSurgery).toLocaleDateString(),
       s.contactNo || "-",
     ]);
