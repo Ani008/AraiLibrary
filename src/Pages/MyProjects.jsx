@@ -166,7 +166,7 @@ export default function MyProjects() {
                   {/* Edit */}
                   <svg
                     onClick={() => handleEditClick(p)}
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="../assets/edit-icon.svg"
                     className="h-5 w-5 text-blue-600 cursor-pointer hover:scale-110"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -183,7 +183,7 @@ export default function MyProjects() {
                   {/* Delete */}
                   <svg
                     onClick={() => handleDelete(p.id)}
-                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns="..assets/trash.svg"
                     className="h-5 w-5 text-red-600 cursor-pointer hover:scale-110"
                     fill="none"
                     viewBox="0 0 24 24"
