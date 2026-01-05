@@ -60,7 +60,7 @@ export default function Surgeries() {
 
     autoTable(doc, {
       startY: 35,
-      head: [["Id", "Patient Name", "Eye", "Surgery", "Date", "Contact"]],
+      head: [["Id", "Patient Name", "Eye", "Surgery", "Surgery Category","Date", "Contact"]],
       body: tableData,
 
       styles: {
@@ -196,6 +196,7 @@ export default function Surgeries() {
                           <th className="border px-3 py-2">Patient</th>
                           <th className="border px-3 py-2">Eye</th>
                           <th className="border px-3 py-2">Surgery</th>
+                          <th className="border px-3 py-2">Surgery Category</th>
                           <th className="border px-3 py-2">Date</th>
                           <th className="border px-3 py-2">Contact</th>
                         </tr>
@@ -213,6 +214,9 @@ export default function Surgeries() {
                             <td className="border px-3 py-2">
                               {s.surgeryName}
                             </td>
+                            <td className="border px-3 py-2">
+                              {s.surgeryCategory}
+                              </td>
                             <td className="border px-3 py-2">
                               {new Date(s.dateOfSurgery).toLocaleDateString()}
                             </td>
