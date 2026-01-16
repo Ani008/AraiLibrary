@@ -51,17 +51,23 @@ export default function Surgeries() {
 
     const tableData = projectSurgeries.map((s, index) => [
       index + 1,
+      s.mrdNo,
       s.patientName,
+      s.address,
       s.operatedEye,
+      s.age,
+      s.sex,
+      s.contactNo,
       s.surgeryName,
       s.surgeryCategory,
+      s.donorName,
       new Date(s.dateOfSurgery).toLocaleDateString(),
       s.contactNo || "-",
     ]);
 
     autoTable(doc, {
       startY: 35,
-      head: [["Id", "Patient Name", "Eye", "Surgery", "Surgery Category","Date", "Contact"]],
+      head: [["Sr No", "MRD No", "Patient Name", "Address", "Eye", "Age", "Sex", "Contact", "Surgery", "Surgery Category","Date", "Donor Name"]],
       body: tableData,
 
       styles: {
