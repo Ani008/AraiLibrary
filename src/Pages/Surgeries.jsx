@@ -142,7 +142,7 @@ export default function Surgeries() {
               onClick={() => toggleProject(project.id)}
               className="cursor-pointer flex justify-between items-center p-5"
             >
-              <div className="grid grid-cols-5 gap-6 w-full">
+              <div className="grid grid-cols-6 gap-5 w-full">
                 <div>
                   <p className="text-gray-500 text-sm">Project</p>
                   <p className="font-semibold">{project.projectName}</p>
@@ -151,6 +151,11 @@ export default function Surgeries() {
                 <div>
                   <p className="text-gray-500 text-sm">Target</p>
                   <p className="font-semibold">{target}</p>
+                </div>
+
+                <div>
+                  <p className="text-gray-500 text-sm">Project Id</p>
+                  <p className="font-semibold">{project.id}</p>
                 </div>
 
                 <div>
@@ -194,7 +199,7 @@ export default function Surgeries() {
                     <table className="w-full text-sm mt-4 border">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border px-3 py-2">Patient</th>
+                          <th className="border px-3 py-2">MRD No</th>
                           <th className="border px-3 py-2">Eye</th>
                           <th className="border px-3 py-2">Surgery</th>
                           <th className="border px-3 py-2">Surgery Category</th>
@@ -207,7 +212,7 @@ export default function Surgeries() {
                         {projectSurgeries.slice(0, 5).map((s) => (
                           <tr key={s.id}>
                             <td className="border px-3 py-2">
-                              {s.patientName}
+                              {s.mrdNo}
                             </td>
                             <td className="border px-3 py-2">
                               {s.operatedEye}

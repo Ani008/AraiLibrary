@@ -5,6 +5,8 @@ export default function UploadExcel() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -13,7 +15,7 @@ export default function UploadExcel() {
 
   const handleUpload = async () => {
     if (!file) {
-      setMessage("Please select an Excel file first.");
+      setErrorMessage("Please select an Excel file first.");
       return;
     }
 
@@ -22,9 +24,12 @@ export default function UploadExcel() {
 
     try {
       setLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+
       const token = localStorage.getItem("token");
 
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/excel/upload`,
         formData,
         {
@@ -35,13 +40,19 @@ export default function UploadExcel() {
         }
       );
 
-      setMessage("Excel uploaded successfully.");
+      // ✅ SUCCESS
+      setSuccessMessage(res.data.message || "Excel uploaded successfully.");
       setFile(null);
     } catch (error) {
-      setMessage(
-        error.response?.data?.message ||
-          "Upload failed. Please check file format."
-      );
+      // 🔒 PROJECT COMPLETED ERROR
+      if (error.response?.data?.error === "PROJECT_COMPLETED") {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage(
+          error.response?.data?.message ||
+            "Upload failed. Please check file format."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -56,9 +67,7 @@ export default function UploadExcel() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* INSTRUCTIONS BOX */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold mb-3">
-            Instructions
-          </h2>
+          <h2 className="text-lg font-semibold mb-3">Instructions</h2>
 
           <ul className="list-disc list-inside text-sm text-gray-600 space-y-2">
             <li>Use only the provided Excel template</li>
@@ -69,12 +78,7 @@ export default function UploadExcel() {
           </ul>
 
           <button
-            onClick={() =>
-              window.open(
-                "/templates/Records.xlsx",
-                "_blank"
-              )
-            }
+            onClick={() => window.open("/templates/Records.xlsx", "_blank")}
             className="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm"
           >
             Download Template
@@ -83,9 +87,7 @@ export default function UploadExcel() {
 
         {/* UPLOAD BOX */}
         <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold mb-3">
-            Upload Excel File
-          </h2>
+          <h2 className="text-lg font-semibold mb-3">Upload Excel File</h2>
 
           <input
             type="file"
@@ -98,18 +100,24 @@ export default function UploadExcel() {
             onClick={handleUpload}
             disabled={loading}
             className={`mt-4 w-full ${
-              loading
-                ? "bg-gray-400"
-                : "bg-indigo-600 hover:bg-blue-500"
+              loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-blue-500"
             } text-white py-2 rounded-md`}
           >
             {loading ? "Uploading..." : "Upload Excel"}
           </button>
 
-          {message && (
-            <p className="mt-3 text-sm text-gray-700">
-              {message}
-            </p>
+          {/* ERROR MESSAGE */}
+          {errorMessage && (
+            <div className="mt-3 bg-red-100 text-red-700 p-3 rounded">
+              {errorMessage}
+            </div>
+          )}
+
+          {/* SUCCESS MESSAGE */}
+          {successMessage && (
+            <div className="mt-3 bg-green-100 text-green-700 p-3 rounded">
+              {successMessage}
+            </div>
           )}
         </div>
       </div>
