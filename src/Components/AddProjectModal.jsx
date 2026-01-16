@@ -6,8 +6,8 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
     projectName: "",
     projectCode: "",
     receiptNo: "",
-    totalAmount: "",
     perSurgeryAmount: "",
+    balanceSurgery: "",
   });
 
   useEffect(() => {
@@ -16,15 +16,15 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
         projectName: editData.projectName,
         projectCode: editData.projectCode,
         receiptNo: editData.receiptNo,
-        totalAmount: editData.totalAmount,
         perSurgeryAmount: editData.perSurgeryAmount,
+        balanceSurgery: editData.balanceSurgery,
       });
     }
   }, [isEdit, editData]);
 
-  const balance =
-    form.totalAmount && form.perSurgeryAmount
-      ? Math.floor(form.totalAmount / form.perSurgeryAmount)
+  const totalAmount =
+    form.perSurgeryAmount && form.balanceSurgery
+      ? Number(form.perSurgeryAmount) * Number(form.balanceSurgery)
       : 0;
 
   const handleChange = (e) => {
@@ -32,50 +32,50 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const url = isEdit
-      ? `${import.meta.env.VITE_API_URL}/api/projects/${editData.id}`
-      : `${import.meta.env.VITE_API_URL}/api/projects`;
+      const url = isEdit
+        ? `${import.meta.env.VITE_API_URL}/api/projects/${editData.id}`
+        : `${import.meta.env.VITE_API_URL}/api/projects`;
 
-    const method = isEdit ? "put" : "post";
+      const method = isEdit ? "put" : "post";
 
-    await axios[method](
-      url,
-      {
-        projectName: form.projectName,
-        projectCode: form.projectCode,
-        receiptNo: Number(form.receiptNo),
-        totalAmount: Number(form.totalAmount),
-        perSurgeryAmount: Number(form.perSurgeryAmount),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios[method](
+        url,
+        {
+          projectName: form.projectName,
+          projectCode: form.projectCode,
+          receiptNo: Number(form.receiptNo),
+          perSurgeryAmount: Number(form.perSurgeryAmount),
+          balanceSurgery: Number(form.balanceSurgery),
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    onSave();
-    onClose();
-  } catch (error) {
-    alert("You are not authorized to perform this action.");
-  }
+      onSave();
+      onClose();
+    } catch (error) {
+      alert("You are not authorized to perform this action.");
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-8 space-y-6 animate-fadeIn">
+
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-800">Add Project</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl"
-          >
+          <h2 className="text-xl font-semibold text-gray-800">
+            {isEdit ? "Update Project" : "Add Project"}
+          </h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
             ✕
           </button>
         </div>
@@ -87,7 +87,7 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
             placeholder="Project Name"
             value={form.projectName}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
 
           <input
@@ -95,7 +95,7 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
             placeholder="Project Code"
             value={form.projectCode}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
 
           <input
@@ -104,16 +104,7 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
             placeholder="Receipt No"
             value={form.receiptNo}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
-
-          <input
-            name="totalAmount"
-            type="number"
-            placeholder="Total Amount"
-            value={form.totalAmount}
-            onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
 
           <input
@@ -122,12 +113,22 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
             placeholder="Per Surgery Amount"
             value={form.perSurgeryAmount}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
           />
 
-          {/* Balance */}
+          <input
+            name="balanceSurgery"
+            type="number"
+            placeholder="Balance Surgeries"
+            value={form.balanceSurgery}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400"
+          />
+
+          {/* Auto-calculated total */}
           <div className="bg-gray-50 border rounded-lg px-4 py-3 text-gray-700">
-            Balance Surgery: <span className="font-semibold">{balance}</span>
+            Total Amount (auto):{" "}
+            <span className="font-semibold">₹ {totalAmount}</span>
           </div>
         </div>
 
@@ -141,7 +142,7 @@ export default function AddProjectModal({ onClose, onSave, editData, isEdit }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition"
+            className="px-6 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600"
           >
             {isEdit ? "Update Project" : "Add Project"}
           </button>
