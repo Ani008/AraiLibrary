@@ -39,35 +39,71 @@ export default function Surgeries() {
     setOpenProjectId(openProjectId === id ? null : id);
   };
 
+  const formatDateDDMMYYYY = (date) => {
+    if (!date) return "-";
+    const d = new Date(date);
+    if (isNaN(d)) return "-";
+
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
   const exportProjectPDF = (project, projectSurgeries) => {
-    const doc = new jsPDF();
+    console.log("🔥 NEW PDF FUNCTION RUNNING");
+
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4",
+    });
 
     doc.setFontSize(14);
     doc.text(`Project Report: ${project.projectName}`, 14, 15);
 
+    const completed = projectSurgeries.length;
+    const remaining = project.balanceSurgery;
+    const planned = completed + remaining;
+
     doc.setFontSize(10);
-    doc.text(`Target: ${project.balanceSurgery}`, 14, 22);
-    doc.text(`Completed: ${projectSurgeries.length}`, 14, 28);
+    doc.text(`Planned Surgeries: ${planned}`, 14, 22);
+    doc.text(`Completed Surgeries: ${completed}`, 14, 28);
+    doc.text(`Remaining Surgeries: ${remaining}`, 14, 34);
+    doc.text(`Per Surgery Amount: ₹${project.perSurgeryAmount}`, 14, 40);
+    doc.text(`Total Amount: ₹${project.totalAmount}`, 14, 46);
 
     const tableData = projectSurgeries.map((s, index) => [
       index + 1,
       s.mrdNo,
       s.patientName,
-      s.address,
       s.operatedEye,
       s.age,
-      s.sex,
-      s.contactNo,
-      s.surgeryName,
-      s.surgeryCategory,
-      s.donorName,
-      new Date(s.dateOfSurgery).toLocaleDateString(),
       s.contactNo || "-",
+      s.surgeryName,
+      s.surgeryCategory || "-",
+      formatDateDDMMYYYY(s.dateOfSurgery),
+      s.donorName || "-",
     ]);
 
     autoTable(doc, {
-      startY: 35,
-      head: [["Sr No", "MRD No", "Patient Name", "Address", "Eye", "Age", "Sex", "Contact", "Surgery", "Surgery Category","Date", "Donor Name"]],
+      startY: 52,
+      head: [
+        [
+          "Sr No",
+          "MRD No",
+          "Patient Name",
+          "Eye",
+          "Age",
+          "Contact",
+          "Surgery",
+          "Category",
+          "Date",
+          "Donor Name",
+        ],
+      ],
+
       body: tableData,
 
       styles: {
@@ -137,9 +173,9 @@ export default function Surgeries() {
         );
 
         const completed = projectSurgeries.length;
-        const target = project.balanceSurgery;
-        const incomplete = Math.max(target - completed, 0);
-        const isCompleted = completed >= target;
+        const remaining = project.balanceSurgery;
+        const target = completed + remaining; // planned surgeries
+        const isCompleted = project.status === "COMPLETED";
 
         return (
           <div key={project.id} className="bg-white rounded-xl shadow border">
@@ -170,19 +206,19 @@ export default function Surgeries() {
                 </div>
 
                 <div>
-                  <p className="text-gray-500 text-sm">Incomplete</p>
-                  <p className="font-semibold text-red-600">{incomplete}</p>
+                  <p className="text-gray-500 text-sm">Remaining</p>
+                  <p className="font-semibold text-red-600">{remaining}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      isCompleted
+                      project.status === "COMPLETED"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {isCompleted ? "Completed" : "In Progress"}
+                    {project.status}
                   </span>
 
                   {openProjectId === project.id ? (
@@ -217,9 +253,7 @@ export default function Surgeries() {
                       <tbody>
                         {projectSurgeries.slice(0, 5).map((s) => (
                           <tr key={s.id}>
-                            <td className="border px-3 py-2">
-                              {s.mrdNo}
-                            </td>
+                            <td className="border px-3 py-2">{s.mrdNo}</td>
                             <td className="border px-3 py-2">
                               {s.operatedEye}
                             </td>
@@ -228,7 +262,7 @@ export default function Surgeries() {
                             </td>
                             <td className="border px-3 py-2">
                               {s.surgeryCategory}
-                              </td>
+                            </td>
                             <td className="border px-3 py-2">
                               {new Date(s.dateOfSurgery).toLocaleDateString()}
                             </td>

@@ -1,4 +1,18 @@
 import { useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+const formatDate = (date) => {
+  const d = new Date(date);
+  if (isNaN(d)) return "-";
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 
 const DonorTable = ({ projects = [], surgeries = [] }) => {
   const [filter, setFilter] = useState("monthly");
@@ -19,8 +33,7 @@ const DonorTable = ({ projects = [], surgeries = [] }) => {
 
     if (filter === "monthly") {
       return (
-        d.getMonth() === now.getMonth() &&
-        d.getFullYear() === now.getFullYear()
+        d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
       );
     }
 
@@ -32,25 +45,136 @@ const DonorTable = ({ projects = [], surgeries = [] }) => {
   let totalCompleted = 0;
   let totalIncomplete = 0;
 
+  const handlePrint = () => {
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+  });
+
+  // Header
+  doc.setFontSize(14);
+  doc.text("Donor Contribution Report", 14, 15);
+
+  doc.setFontSize(10);
+  doc.text(`Filter: ${filter.toUpperCase()}`, 14, 22);
+  doc.text(`Generated on: ${formatDate(new Date())}`, 14, 28);
+
+  // Prepare table data (IMPORTANT: reuse same filter)
+  const tableData = projects.map((project) => {
+    const completed = surgeries.filter(
+      (s) =>
+        s.projectId === project.id &&
+        isWithinFilter(s.createdAt)
+    ).length;
+
+    const remaining = project.balanceSurgery;
+    const target = completed + remaining;
+
+    return [
+      project.projectName,
+      target,
+      completed,
+      remaining,
+      project.status,
+    ];
+  });
+
+  autoTable(doc, {
+  startY: 35,
+
+  head: [[
+    "Donor / Project",
+    "Target",
+    "Completed",
+    "Remaining",
+    "Status",
+  ]],
+
+  body: tableData,
+
+  styles: {
+    fontSize: 6,
+    cellPadding: 2,
+    valign: "middle",
+    lineColor: [200, 200, 200],
+    lineWidth: 0.3,
+  },
+
+  headStyles: {
+    fillColor: [41, 98, 255],
+    textColor: 255,
+    fontStyle: "bold",
+    halign: "center",
+    valign: "middle",
+  },
+
+  bodyStyles: {
+    halign: "center",
+  },
+
+  columnStyles: {
+    0: {
+      halign: "left",
+      cellWidth: 70,   // Donor name needs space
+    },
+    1: {
+      cellWidth: 25,
+    },
+    2: {
+      cellWidth: 25,
+    },
+    3: {
+      cellWidth: 25,
+    },
+    4: {
+      cellWidth: 30,  // Status column
+      halign: "center",
+    },
+  },
+
+  alternateRowStyles: {
+    fillColor: [245, 247, 250],
+  },
+
+  didParseCell: function (data) {
+    // Prevent word breaking in headers & status
+    data.cell.styles.minCellHeight = 10;
+  },
+});
+
+
+  doc.save(`donor-report-${filter}.pdf`);
+};
+
+
   return (
     <div className="bg-white rounded-xl shadow p-6">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">
-          Donor Contributions
-        </h3>
+        <h3 className="text-lg font-semibold">Donor Contributions</h3>
 
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="border rounded-md px-3 py-1 text-sm"
-        >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="border rounded-md px-3 py-1 text-sm"
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+
+          <button
+            onClick={handlePrint}
+            className="bg-blue-600 text-white px-4 py-1.5 rounded-md text-sm hover:bg-blue-700"
+          >
+            Print
+          </button>
+        </div>
       </div>
+
 
       {/* TABLE */}
       <div className="overflow-x-auto">
@@ -71,14 +195,10 @@ const DonorTable = ({ projects = [], surgeries = [] }) => {
 
               const completed = surgeries.filter(
                 (s) =>
-                  s.projectId === project.id &&
-                  isWithinFilter(s.createdAt)
+                  s.projectId === project.id && isWithinFilter(s.createdAt),
               ).length;
 
-              const incomplete = Math.max(
-                target - completed,
-                0
-              );
+              const incomplete = Math.max(target - completed, 0);
 
               const isCompleted = completed >= target;
 
@@ -89,9 +209,7 @@ const DonorTable = ({ projects = [], surgeries = [] }) => {
 
               return (
                 <tr key={project.id}>
-                  <td className="border px-4 py-3">
-                    {project.projectName}
-                  </td>
+                  <td className="border px-4 py-3">{project.projectName}</td>
 
                   <td className="border px-4 py-3 text-center font-semibold">
                     {target}
@@ -115,9 +233,7 @@ const DonorTable = ({ projects = [], surgeries = [] }) => {
             {/* TOTAL ROW */}
             <tr className="bg-gray-100 font-bold">
               <td className="border px-4 py-3">TOTAL</td>
-              <td className="border px-4 py-3 text-center">
-                {totalTarget}
-              </td>
+              <td className="border px-4 py-3 text-center">{totalTarget}</td>
               <td className="border px-4 py-3 text-center text-black-600">
                 {totalCompleted}
               </td>

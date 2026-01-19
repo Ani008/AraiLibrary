@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AddProjectModal from "../Components/AddProjectModal";
+import { getUserRole } from "../utils/auth";
+
 
 import editIcon from "../assets/edit-icon.svg";
 import trash from "../assets/trash.svg";
 
 export default function MyProjects() {
+  const userRole = getUserRole();
+
+
   const [showModal, setShowModal] = useState(false);
   const [projects, setProjects] = useState([]);
 
@@ -26,6 +31,10 @@ export default function MyProjects() {
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem("token");
+
+      const userRole = localStorage.getItem("role");
+
+
 
       if (!token) {
         console.warn("No token found, skipping fetch");
@@ -64,6 +73,18 @@ export default function MyProjects() {
     (sum, p) => sum + Number(p.totalAmount || 0),
     0
   );
+
+  const formatINR = (amount) => {
+  if (amount === null || amount === undefined) return "-";
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+  const displayTotalAmount = userRole === "ADMIN" ? formatINR(totalAmount) : "-";
 
   //NEW CARDS :
   const completedProjects = projects.filter(
@@ -124,7 +145,7 @@ export default function MyProjects() {
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-6">
         <StatCard title="Total Projects" value={totalProjects} />
         <StatCard title="Total Balance Surgeries" value={totalSurgeries} />
-        <StatCard title="Total Amount (₹)" value={totalAmount} />
+        <StatCard title="Total Amount (₹)" value={displayTotalAmount} />
         <StatCard title="Completed Projects" value={completedProjects} />
         <StatCard title="Incomplete Projects" value={incompleteProjects} />
       </div>
