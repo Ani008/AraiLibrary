@@ -1,135 +1,132 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
-import { RiUserSettingsLine } from 'react-icons/ri';
-import { useNavigate } from 'react-router-dom';
-import AbstractBgImage from '../assets/abstract.jpg';
+import React, { useState } from "react";
+import { ShieldCheck, Lock, ChevronDown, Library } from "lucide-react";
+import libraryImage from "../assets/569.jpg";
+import { useNavigate } from "react-router-dom"; // Add this
 
 const LoginPage = () => {
-  const [role, setRole] = useState('Admin');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);  
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const [role, setRole] = useState("USER");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
   e.preventDefault();
-
-  if (!password) {
-    alert("Password is required");
-    return;
-  }
+  setLoading(true);
 
   try {
-    setLoading(true);
+    const response = await fetch("https://quintan-kyson-cycloidal.ngrok-free.dev/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, password }),
+    });
 
-    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`,
-      {
-        role: role.toUpperCase(),
-        password,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const data = await response.json();
 
-    localStorage.setItem("token", res.data.token);
+    if (response.ok) { // Check if the status code is 200-299
+      console.log("Login Attempt Successful");
+      
+      // OPTIONAL: Store token or user data if your backend sends it
+      // localStorage.setItem("token", data.token); 
 
-
-    navigate('/dashboard');
-
-    alert(res.data.message);
-
-
-    // later: navigate based on role
-    // if (role === "Admin") navigate("/admin");
+      // Navigate to the dashboard/home route
+      navigate("/"); 
+    } else {
+      // Handle login failure (wrong password, etc.)
+      alert(data.message || "Login failed. Please check your password.");
+    }
 
   } catch (error) {
-    alert(error.response?.data?.message || "Login failed");
+    console.error("Login Error:", error);
+    alert("Server error. Please try again later.");
   } finally {
     setLoading(false);
   }
-
- };
+};
 
   return (
-    // Page Background - Neutral light gray
-    <div className="min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 md:p-10">
-      
-      {/* Main Card */}
-      <div className="bg-white w-full max-w-[1000px] min-h-[600px] rounded-[40px] overflow-hidden flex flex-col md:flex-row shadow-xl border border-gray-100">
-        
-        {/* LEFT SIDE - Form Section */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center order-2 md:order-1">
-          <div className="max-w-sm mx-auto w-full">
-            
-            {/* Header */}
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 mt-4 mb-2">Welcome !</h2>
-              <p className="text-gray-400 text-sm font-medium">Please enter your details.</p>
+    <div className="flex min-h-screen font-sans bg-white">
+      {/* Left Side: Login Form */}
+      <div className="flex flex-col justify-center w-full px-8 md:w-1/2 lg:px-24">
+        <div className="max-w-md mx-auto w-full">
+          {/* Logo */}
+          <div className="flex items-center gap-2 mb-8">
+            <div className="bg-indigo-600 p-1.5 rounded-lg">
+              <ShieldCheck className="text-white w-6 h-6" />
+            </div>
+            <span className="text-2xl font-bold text-slate-800">ARAI</span>
+          </div>
+
+          <h1 className="text-4xl font-bold text-slate-900 mb-10">
+            Welcome Back
+          </h1>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Role Dropdown */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Select Role
+              </label>
+              <div className="relative">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                >
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="STAFF">STAFF</option>
+                  <option value="USER">USER</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
+              </div>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
-              
-              {/* Role Selection Dropdown */}
-              <div className="relative">
-                <label className="text-xs font-semibold text-gray-500 ml-4 mb-1 block">Login as</label>
-                <div className="relative">
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="w-full py-3 px-10 bg-gray-50 border border-gray-200 rounded-full text-sm appearance-none focus:outline-none focus:border-blue-500 focus:bg-white transition-all cursor-pointer"
-                  >
-                    <option value="Admin">ADMIN</option>
-                    <option value="User">USER</option>
-                  </select>
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                    <RiUserSettingsLine size={18} />
-                  </div>
-                 
-                </div>
-              </div>
-
-              {/* Password Input */}
+            {/* Password Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full py-3 px-4 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all peer pr-10"
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  required
                 />
-                
+                <Lock className="absolute right-3 top-3.5 w-5 h-5 text-slate-400" />
               </div>
+            </div>
 
-              {/* Login Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#1A237E] hover:bg-[#0D145A] text-white font-semibold py-3.5 rounded-full transition duration-300 mt-4 shadow-lg active:scale-[0.98]">
-                {loading ? "Logging in..." : "Login"}
-              </button>
-            </form>
+            {/* Remember Me & Forgot Password */}
+            <div className="flex items-center justify-between text-sm"></div>
 
-          
-
-          </div>
+            {/* Login Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transform transition-active active:scale-[0.98] shadow-lg shadow-indigo-200"
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
+          </form>
         </div>
+      </div>
 
-        {/* RIGHT SIDE - Image Section */}
-        <div className="w-full md:w-1/2 h-48 md:h-auto relative order-1 md:order-2">
-            <img 
-                src={AbstractBgImage} 
-                alt="Login Background" 
-                className="w-full h-full object-cover"
-            />
-            {/* Subtle Overlay to match original look */}
-            <div className="absolute inset-0 bg-blue-900/10 pointer-events-none"></div>
+      
+      <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-[#f0f4ff] relative overflow-hidden">
+        
+        <div className="w-full max-w-2xl p-4 flex justify-center items-center">
+          
+          <img
+            src={libraryImage}
+            alt="Illustration"
+            className="w-full h-auto max-h-[600px] object-contain mix-blend-multiply opacity-90"
+          />
         </div>
       </div>
     </div>
   );
-};
+ };
 
 export default LoginPage;

@@ -1,30 +1,39 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import Layout from './Components/Layout';
+import Dashboard from './Pages/Dashboard';
+import Standards from './Pages/Standards';
+import Periodicals from './Pages/Periodicals';
+import Abstracts from './Pages/Abstracts';
 import LoginPage from './Pages/LoginPage';
-import Dashboard from './Pages/HospitalDashboard';
-import MainLayout from './Components/MainLayout';
-import MyProject from './Pages/MyProjects';
-import Surgeries from './Pages/Surgeries';
-import { Upload } from 'lucide-react';
-import UploadExcel from './Pages/UploadExcel';
-import ProtectedRoute from './Components/ProtectedRoute';
-
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* 1. Public Route: No Sidebar */}
-        <Route path="/" element={<LoginPage />} />
+  const location = useLocation();
 
-        {/* 2. Protected Routes: Shared Sidebar Layout */}
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>}/>
-          <Route path="/projects" element={<MyProject />}  />
-          <Route path="/surgeries" element={<Surgeries/>} />
-          <Route path="/uploadexcel" element={<UploadExcel/>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+  // Check if current path is login
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <>
+      {isLoginPage ? (
+        /* 1. Login Page: No Sidebar/Navbar */
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      ) : (
+        /* 2. All other pages: Show Sidebar/Navbar via Layout */
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/standards" element={<Standards />} />
+            <Route path="/periodicals" element={<Periodicals />} />
+            <Route path="/abstracts" element={<Abstracts />} />
+            {/* Redirect unknown routes to Dashboard */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Layout>
+      )}
+    </>
   );
 }
 
