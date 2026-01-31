@@ -14,7 +14,7 @@ const LoginPage = () => {
   setLoading(true);
 
   try {
-    const response = await fetch("https://quintan-kyson-cycloidal.ngrok-free.dev/api/auth/login", {
+    const response = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role, password }),
@@ -25,8 +25,8 @@ const LoginPage = () => {
     if (response.ok) { // Check if the status code is 200-299
       console.log("Login Attempt Successful");
       
-      // OPTIONAL: Store token or user data if your backend sends it
-      // localStorage.setItem("token", data.token); 
+
+      localStorage.setItem("token", data.token); 
 
       // Navigate to the dashboard/home route
       navigate("/"); 

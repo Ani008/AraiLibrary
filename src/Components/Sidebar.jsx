@@ -36,7 +36,7 @@ const Sidebar = () => {
     {
       title: "MEMBERSHIP",
       items: [
-        { name: 'KC Members', icon: Users, path: '/membership' },
+        { name: 'KC Members', icon: Users, path: '/kcmembers' },
       ]
     },
     {

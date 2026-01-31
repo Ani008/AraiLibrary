@@ -3,8 +3,7 @@ import axios from "axios";
 import { Plus, Edit3, Trash2, Eye, BookCopy, Globe } from 'lucide-react';
 import AbstractModal from "../Modal/AbstractModal"; // Pointing to your new modal
 
-// const API_BASE_URL = "http://localhost:5000/api/abstracts"; 
-const API_BASE_URL = "https://quintan-kyson-cycloidal.ngrok-free.dev/api/abstracts";
+const API_BASE_URL = "http://localhost:5000/api/abstracts"; 
 
 const Abstracts = () => {
   const [abstracts, setAbstracts] = useState([]);
@@ -44,7 +43,7 @@ const Abstracts = () => {
         
         {/* Header */}
         <div className="p-6 flex justify-between items-center border-b">
-          <div className="flex items-center text-lg font-bold text-slate-800">
+          <div className="flex items-center text-xl font-bold text-slate-800">
             <BookCopy className="w-6 h-6 mr-2 text-blue-600" />
             Automotive Research Abstracts
           </div>
@@ -76,7 +75,7 @@ const Abstracts = () => {
               <tr key={item._id} className="hover:bg-gray-50/50 transition">
                 {/* Title & Authors */}
                 <td className="px-6 py-4">
-                  <div className="font-bold text-slate-800 leading-tight">{item.title}</div>
+                  <div className="font-semibold text-slate-800 leading-tight">{item.title}</div>
                   <div className="text-[11px] text-blue-500 mt-1 font-medium">
                     {item.authors && item.authors.length > 0 ? item.authors.join(", ") : 'No authors listed'}
                   </div>
@@ -102,7 +101,7 @@ const Abstracts = () => {
 
                 {/* Status Badge */}
                 <td className="px-6 py-4 text-center">
-                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] rounded-full font-bold uppercase tracking-tighter">
+                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] rounded-full font-semibold uppercase tracking-tighter">
                     {item.status || 'Published'}
                   </span>
                 </td>

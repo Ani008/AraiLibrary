@@ -3,7 +3,7 @@ import axios from "axios";
 import { Plus, Edit3, Trash2, Eye, FileText} from 'lucide-react';
 import StandardModal from "../Modal/StandardModal";
 
-const API_BASE_URL = "https://quintan-kyson-cycloidal.ngrok-free.dev/api/standards";
+const API_BASE_URL = "http://localhost:5000/api/standards";
 
 const StandardsPage = () => {
   const [standards, setStandards] = useState([]);

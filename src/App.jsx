@@ -6,6 +6,9 @@ import Periodicals from './Pages/Periodicals';
 import Abstracts from './Pages/Abstracts';
 import LoginPage from './Pages/LoginPage';
 
+import KCMembers from './Pages/KCMembers';
+import RecentActivity from './Components/RecentActivity';
+
 function App() {
   const location = useLocation();
 
@@ -28,7 +31,8 @@ function App() {
             <Route path="/standards" element={<Standards />} />
             <Route path="/periodicals" element={<Periodicals />} />
             <Route path="/abstracts" element={<Abstracts />} />
-            {/* Redirect unknown routes to Dashboard */}
+            <Route path='/kcmembers' element={<KCMembers />} />
+            <Route path='/recentactivity' element={<RecentActivity />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Layout>

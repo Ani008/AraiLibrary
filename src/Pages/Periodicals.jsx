@@ -4,7 +4,7 @@ import { Plus, Edit3, Trash2, Eye, Newspaper } from 'lucide-react'; // Changed i
 import PeriodicalModal from "../Modal/PeriodicalModal";
 // Import PeriodicalDetails here once you create it
 
-const API_BASE_URL = "https://quintan-kyson-cycloidal.ngrok-free.dev/api/periodicals"; // CORRECTED ENDPOINT
+const API_BASE_URL = "http://localhost:5000/api/periodicals"; // CORRECTED ENDPOINT
 
 const PeriodicalsPage = () => {
   const [periodicals, setPeriodicals] = useState([]);

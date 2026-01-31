@@ -2,18 +2,20 @@ import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import { FileText, Newspaper, Library, Eye, Bell, Mail, ChevronDown } from 'lucide-react';
 import StatCard from '../Components/StatCard';
-import ListItem from '../Components/Listitem';
 import banerimg from '../assets/banerimg.png';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [standardsCount, setStandardsCount] = useState(0);
+  const [periodicalsCount, setPeriodicalsCount] = useState(0);
+  const [abstractsCount, setAbstractsCount] = useState(0);
+  const [KCMembersCount, setKCMembersCount] = useState(0);
 
   useEffect(() => {
     const fetchStandardsCount = async () => {
       try {
-        const response = await axios.get('https://quintan-kyson-cycloidal.ngrok-free.dev/api/standards');
+        const response = await axios.get('http://localhost:5000/api/standards');
         if (response.data && response.data.success) {
           setStandardsCount(response.data.count);
         }
@@ -21,6 +23,43 @@ const Dashboard = () => {
         console.error('Error fetching standards count:', error);
       }
     };
+
+    const fetchPeriodicalsCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/periodicals');
+        if (response.data && response.data.success) {
+          setPeriodicalsCount(response.data.count);
+        } 
+      } catch (error) {
+        console.error('Error fetching periodicals count:', error);
+      }
+    };
+
+    const fetchAbstractsCount = async () => { 
+      try {
+        const response = await axios.get('http://localhost:5000/api/abstracts');
+        if (response.data && response.data.success) {
+          setAbstractsCount(response.data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching abstracts count:', error);
+      } 
+    };
+
+    const fetchKCMembersCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/kcmembers');
+        if (response.data && response.data.success) {
+          setKCMembersCount(response.data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching KC Members count:', error);
+        }
+      };
+
+    fetchKCMembersCount();
+    fetchAbstractsCount();
+    fetchPeriodicalsCount();
     fetchStandardsCount();
   }, []);
 
@@ -53,7 +92,7 @@ const Dashboard = () => {
         />
         <StatCard 
           label="Periodicals" 
-          value="77%" 
+          value={periodicalsCount} 
           subLabel="PERIODICALS"
           color="bg-[#4D4183]" 
           icon={<Newspaper className="text-white w-6 h-6" />} 
@@ -61,18 +100,19 @@ const Dashboard = () => {
         />
         <StatCard 
           label="Abstracts" 
-          value="91%" 
+          value={abstractsCount} 
           subLabel="ABSTRACT"
           color="bg-[#F95B7E]" 
-          icon={<Library className="text-white w-6 h-6" />} 
+          icon={<Library className="text-white w-6 h-6" />}
+          onClick={()=> navigate("/abstracts")}
         />
         <StatCard 
           label="Total Views" 
-          value="126" 
+          value={KCMembersCount}
           subLabel="TOTAL MEMBERS"
           color="bg-[#E6E8F4]" 
           icon={<Eye className="text-gray-400 w-6 h-6" />} // Gray icon for light bg
-          isLight={true}
+          onClick={()=> navigate("/kcmembers")}
         />
       </div>
 
