@@ -29,7 +29,7 @@ const Sidebar = () => {
     {
       title: "ARAI AJMT",
       items: [
-        { name: 'AJMT Papers', icon: FileSignature, path: '/ajmt-papers' },
+        { name: 'AJMT Papers', icon: FileSignature, path: '/ajmtpapers' },
         { name: 'Email Comms', icon: Mail, path: '/email-comms' },
       ]
     },

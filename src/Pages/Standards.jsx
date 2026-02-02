@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import axios from "axios";
-import { Plus, Edit3, Trash2, Eye, FileText} from 'lucide-react';
+import { Plus, Edit3, Trash2, Eye, FileText, Download, UserMinus} from 'lucide-react';
 import StandardModal from "../Modal/StandardModal";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:5000/api/standards";
 
@@ -10,6 +11,7 @@ const StandardsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [viewingStandard, setViewingStandard] = useState(null);
+  const navigate = useNavigate();
 
   // 2) Fetch All Standards on Load
   const fetchStandards = async () => {
@@ -66,6 +68,15 @@ const StandardsPage = () => {
               className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm"
             >
               <Plus className="w-4 h-4 mr-2" /> Add New Standard
+            </button>
+
+            <button
+              onClick={() => {
+                navigate('/reports');
+              }}
+              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download Reports
             </button>
           </div>
         </div>

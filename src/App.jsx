@@ -8,6 +8,8 @@ import LoginPage from './Pages/LoginPage';
 
 import KCMembers from './Pages/KCMembers';
 import RecentActivity from './Components/RecentActivity';
+import Reports from './Pages/Reports';
+import AJMTPapers from './Pages/AJMTPapers';
 
 function App() {
   const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
             <Route path="/abstracts" element={<Abstracts />} />
             <Route path='/kcmembers' element={<KCMembers />} />
             <Route path='/recentactivity' element={<RecentActivity />} />
+            <Route path='/reports' element={<Reports />} />
+            <Route path='/ajmtpapers' element={<AJMTPapers />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Layout>

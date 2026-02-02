@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Plus, Edit3, Trash2, Eye, BookCopy, Globe } from 'lucide-react';
+import {
+  Plus,
+  Edit3,
+  Trash2,
+  Eye,
+  BookCopy,
+  Globe,
+  Download,
+} from "lucide-react";
 import AbstractModal from "../Modal/AbstractModal"; // Pointing to your new modal
+import { useNavigate } from "react-router-dom";
 
-const API_BASE_URL = "http://localhost:5000/api/abstracts"; 
+const API_BASE_URL = "http://localhost:5000/api/abstracts";
 
 const Abstracts = () => {
   const [abstracts, setAbstracts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [viewingAbstract, setViewingAbstract] = useState(null);
+  const navigate = useNavigate();
 
   const fetchAbstracts = async () => {
     try {
@@ -27,7 +37,9 @@ const Abstracts = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this research abstract?")) {
+    if (
+      window.confirm("Are you sure you want to delete this research abstract?")
+    ) {
       try {
         await axios.delete(`${API_BASE_URL}/${id}`);
         fetchAbstracts();
@@ -40,22 +52,35 @@ const Abstracts = () => {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        
         {/* Header */}
-        <div className="p-6 flex justify-between items-center border-b">
-          <div className="flex items-center text-xl font-bold text-slate-800">
-            <BookCopy className="w-6 h-6 mr-2 text-blue-600" />
-            Automotive Research Abstracts
+        {/* Header */}
+        <div className="p-6 flex justify-between items-center border-b bg-white">
+          {/* Left Side: Title */}
+          <div className="flex items-center text-lg font-bold text-slate-800">
+            <User className="w-6 h-6 mr-2 text-violet-600" />
+            KC Subscriptions & Memberships
           </div>
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setIsModalOpen(true);
-            }}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition shadow-sm font-medium"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add New Abstract
-          </button>
+    
+          {/* Right Side: Button Group */}
+          <div className="flex items-center gap-3">
+            {" "}
+            {/* This wrapper keeps buttons together */}
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setIsModalOpen(true);
+              }}
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition shadow-sm font-medium"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add New Abstract
+            </button>
+            <button
+              onClick={() => navigate("/reports")}
+              className="flex items-center px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition shadow-sm font-medium"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download Reports
+            </button>
+          </div>
         </div>
 
         {/* Table */}
@@ -75,34 +100,40 @@ const Abstracts = () => {
               <tr key={item._id} className="hover:bg-gray-50/50 transition">
                 {/* Title & Authors */}
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-slate-800 leading-tight">{item.title}</div>
+                  <div className="font-semibold text-slate-800 leading-tight">
+                    {item.title}
+                  </div>
                   <div className="text-[11px] text-blue-500 mt-1 font-medium">
-                    {item.authors && item.authors.length > 0 ? item.authors.join(", ") : 'No authors listed'}
+                    {item.authors && item.authors.length > 0
+                      ? item.authors.join(", ")
+                      : "No authors listed"}
                   </div>
                 </td>
 
                 {/* Journal/Source */}
                 <td className="px-6 py-4 text-slate-600 text-sm">
-                  <div className="font-medium">{item.journal || 'N/A'}</div>
-                  <div className="text-[10px] text-slate-400 italic">{item.source}</div>
+                  <div className="font-medium">{item.journal || "N/A"}</div>
+                  <div className="text-[10px] text-slate-400 italic">
+                    {item.source}
+                  </div>
                 </td>
 
                 {/* Publication Year */}
                 <td className="px-6 py-4 text-center text-slate-500 text-sm font-mono">
-                  {item.publicationYear || item.year || '—'}
+                  {item.publicationYear || item.year || "—"}
                 </td>
 
                 {/* Subject */}
                 <td className="px-6 py-4 text-center">
-                   <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded">
-                    {item.subject || 'General'}
-                   </span>
+                  <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded">
+                    {item.subject || "General"}
+                  </span>
                 </td>
 
                 {/* Status Badge */}
                 <td className="px-6 py-4 text-center">
                   <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] rounded-full font-semibold uppercase tracking-tighter">
-                    {item.status || 'Published'}
+                    {item.status || "Published"}
                   </span>
                 </td>
 
@@ -110,7 +141,10 @@ const Abstracts = () => {
                 <td className="px-6 py-4 text-right pr-8">
                   <div className="flex justify-end space-x-2">
                     <button
-                      onClick={() => { setEditingId(item._id); setIsModalOpen(true); }}
+                      onClick={() => {
+                        setEditingId(item._id);
+                        setIsModalOpen(true);
+                      }}
                       className="p-2 bg-slate-100 text-slate-600 rounded hover:bg-blue-500 hover:text-white transition"
                       title="Edit"
                     >
@@ -140,7 +174,7 @@ const Abstracts = () => {
             ))}
           </tbody>
         </table>
-        
+
         {/* Empty State */}
         {abstracts.length === 0 && (
           <div className="py-20 text-center text-slate-400">

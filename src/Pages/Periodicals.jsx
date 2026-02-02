@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Plus, Edit3, Trash2, Eye, Newspaper } from 'lucide-react'; // Changed icon to Newspaper
+import { Plus, Edit3, Trash2, Eye, Newspaper, Download, UserMinus } from "lucide-react"; // Changed icon to Newspaper
 import PeriodicalModal from "../Modal/PeriodicalModal";
-// Import PeriodicalDetails here once you create it
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:5000/api/periodicals"; // CORRECTED ENDPOINT
 
@@ -11,6 +11,7 @@ const PeriodicalsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [viewingPeriodical, setViewingPeriodical] = useState(null);
+  const navigate = useNavigate();
 
   const fetchPeriodicals = async () => {
     try {
@@ -41,20 +42,34 @@ const PeriodicalsPage = () => {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 flex justify-between items-center border-b">
+        {/* Header */}
+        <div className="p-6 flex justify-between items-center border-b bg-white">
+          {/* Left Side: Title */}
           <div className="flex items-center text-lg font-bold text-slate-800">
-            <Newspaper className="w-6 h-6 mr-2 text-emerald-600" /> {/* Changed color/icon */}
-            Periodicals Management
+            <UserMinus className="w-6 h-6 mr-2 text-violet-600" />
+            Periodicals
           </div>
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setIsModalOpen(true);
-            }}
-            className="flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition shadow-sm"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add New Periodical
-          </button>
+
+          {/* Right Side: Button Group */}
+          <div className="flex items-center gap-3">
+            {" "}
+            {/* This wrapper keeps buttons together */}
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setIsModalOpen(true);
+              }}
+              className="flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition shadow-sm font-medium"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add New Periodical
+            </button>
+            <button
+              onClick={() => navigate("/reports")}
+              className="flex items-center px-4 py-2 border border-emerald-600 text-emerald-600 rounded-md hover:bg-emerald-50 transition shadow-sm font-medium"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download Reports
+            </button>
+          </div>
         </div>
 
         <table className="w-full text-left">
@@ -79,7 +94,7 @@ const PeriodicalsPage = () => {
                   {p.publisher}
                 </td>
                 <td className="px-6 py-4 text-slate-500 font-mono text-xs">
-                  {p.issn || 'N/A'}
+                  {p.issn || "N/A"}
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] rounded-full font-bold uppercase">
@@ -92,7 +107,10 @@ const PeriodicalsPage = () => {
                 <td className="px-6 py-4 text-right pr-8">
                   <div className="flex justify-end space-x-2">
                     <button
-                      onClick={() => { setEditingId(p._id); setIsModalOpen(true); }}
+                      onClick={() => {
+                        setEditingId(p._id);
+                        setIsModalOpen(true);
+                      }}
                       className="p-2 bg-slate-100 text-slate-600 rounded hover:bg-emerald-500 hover:text-white transition"
                     >
                       <Edit3 className="w-4 h-4" />
@@ -104,8 +122,8 @@ const PeriodicalsPage = () => {
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button
-                       onClick={() => setViewingPeriodical(p)}
-                       className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
+                      onClick={() => setViewingPeriodical(p)}
+                      className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
                     >
                       <Eye size={18} />
                     </button>
@@ -124,7 +142,7 @@ const PeriodicalsPage = () => {
           refreshData={fetchPeriodicals}
         />
       )}
-      
+
       {/* If you have a viewing component for periodicals, add it here */}
     </div>
   );
