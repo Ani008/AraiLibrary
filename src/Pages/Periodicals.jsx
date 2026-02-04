@@ -46,8 +46,8 @@ const PeriodicalsPage = () => {
         <div className="p-6 flex justify-between items-center border-b bg-white">
           {/* Left Side: Title */}
           <div className="flex items-center text-lg font-bold text-slate-800">
-            <UserMinus className="w-6 h-6 mr-2 text-violet-600" />
-            Periodicals
+            <Newspaper className="w-6 h-6 mr-2 text-emerald-600" />
+            Periodicals Management
           </div>
 
           {/* Right Side: Button Group */}

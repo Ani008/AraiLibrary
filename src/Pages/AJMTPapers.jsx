@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Plus, Edit3, Trash2, Eye, FileText, Download } from "lucide-react";
+import { Plus, Edit3, Trash2, FileText, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AJMTPaperModal from "../Modal/AJMTPaperModal"; // You'll create this next
+import AJMTPaperModal from "../Modal/AJMTPaperModal"; 
 
-const API_BASE_URL = "http://localhost:5000/api/ajmtpapers"; // Adjust to your backend route
+const API_BASE_URL = "http://localhost:5000/api/ajmtpapers"; 
 
 const AJMTPapers = () => {
   const [papers, setPapers] = useState([]);
@@ -44,7 +44,6 @@ const AJMTPapers = () => {
     }
   };
 
-  // Helper to color status badges
   const getStatusStyle = (status) => {
     switch (status) {
       case 'Published': return 'bg-emerald-100 text-emerald-700';
@@ -103,20 +102,23 @@ const AJMTPapers = () => {
                     {paper.paperTitle}
                   </div>
                   <div className="text-xs text-slate-500 italic">
-                    {paper.authors?.join(", ")}
+                    {/* Fixed: Mapping through author objects to get names */}
+                    {paper.authors?.map(auth => auth.authorName).join(", ")}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-slate-600 text-xs font-medium">
-                  {paper.email}
+                  {/* Fixed: Getting email from the first author object */}
+                  {paper.authors?.[0]?.authorEmail || "N/A"}
                 </td>
                 <td className="px-6 py-4 text-center">
-                  <span className={`text-xs font-bold ${paper.plagiarismPercentage > 20 ? 'text-red-500' : 'text-slate-600'}`}>
-                    {paper.plagiarismPercentage !== null ? `${paper.plagiarismPercentage}%` : "N/A"}
+                  <span className={`text-xs font-bold ${paper.totalScore > 20 ? 'text-red-500' : 'text-slate-600'}`}>
+                    {/* Fixed: Using totalScore field from your DB */}
+                    {paper.totalScore !== undefined ? `${paper.totalScore}%` : "N/A"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${getStatusStyle(paper.status)}`}>
-                    {paper.status}
+                    {paper.status || "Under Review"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right pr-8">

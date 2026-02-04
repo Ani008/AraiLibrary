@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import axios from "axios";
 import {
   Plus,
@@ -8,6 +9,7 @@ import {
   BookCopy,
   Globe,
   Download,
+  FileText
 } from "lucide-react";
 import AbstractModal from "../Modal/AbstractModal"; // Pointing to your new modal
 import { useNavigate } from "react-router-dom";
@@ -57,8 +59,8 @@ const Abstracts = () => {
         <div className="p-6 flex justify-between items-center border-b bg-white">
           {/* Left Side: Title */}
           <div className="flex items-center text-lg font-bold text-slate-800">
-            <User className="w-6 h-6 mr-2 text-violet-600" />
-            KC Subscriptions & Memberships
+            <FileText className="w-6 h-6 mr-2 text-blue-600" />
+            Automotive Abstract Management
           </div>
     
           {/* Right Side: Button Group */}
